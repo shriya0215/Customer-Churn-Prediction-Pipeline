@@ -1,19 +1,40 @@
 @echo off
 title Customer Churn Prediction Pipeline
-cls
+cd /d "%~dp0"
 
 :detect_python
+if exist "C:\Users\Rutuja\AppData\Local\Programs\Python\Python314\python.exe" (
+    set "PY_CMD=C:\Users\Rutuja\AppData\Local\Programs\Python\Python314\python.exe"
+    goto menu
+)
+if exist "%LOCALAPPDATA%\Programs\Python\Python314\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python314\python.exe"
+    goto menu
+)
+if exist "%LOCALAPPDATA%\Programs\Python\Python313\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python313\python.exe"
+    goto menu
+)
+if exist "%LOCALAPPDATA%\Programs\Python\Python312\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
+    goto menu
+)
+if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
+    set "PY_CMD=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+    goto menu
+)
 where python >nul 2>nul
 if %ERRORLEVEL% EQU 0 (
-    set PY_CMD=python
+    set "PY_CMD=python"
     goto menu
 )
 where py >nul 2>nul
 if %ERRORLEVEL% EQU 0 (
-    set PY_CMD=py
+    set "PY_CMD=py"
     goto menu
 )
-echo [ERROR] Python not found in PATH!
+
+echo [ERROR] Python not found!
 pause
 exit /b 1
 
@@ -47,14 +68,21 @@ goto menu
 :opt_api
 cls
 echo Starting FastAPI REST Server...
-start "" cmd /c "timeout /t 2 /nobreak >nul && start http://127.0.0.1:8000/docs"
-%PY_CMD% run_demo.py --serve --port 8000
+echo Address: http://127.0.0.1:8000/docs
+echo.
+echo Starting server... Browser will open in 3 seconds.
+echo (Keep this terminal window open while using the API)
+echo.
+start "" cmd /c "timeout /t 3 /nobreak >nul && start http://127.0.0.1:8000/docs"
+"%PY_CMD%" run_demo.py --serve --port 8000
+echo.
+echo Server stopped.
 pause
 goto menu
 
 :opt_demo
 cls
-%PY_CMD% run_demo.py
+"%PY_CMD%" run_demo.py
 echo.
 pause
 goto menu
@@ -62,7 +90,7 @@ goto menu
 :opt_test
 cls
 echo Running test suite...
-%PY_CMD% -m pytest -v
+"%PY_CMD%" -m pytest -v
 echo.
 pause
 goto menu
@@ -70,7 +98,7 @@ goto menu
 :opt_train
 cls
 echo Retraining ML Pipeline and Generating Plots...
-%PY_CMD% -m src.pipeline
+"%PY_CMD%" -m src.pipeline
 echo.
 pause
 goto menu
@@ -78,7 +106,7 @@ goto menu
 :opt_install
 cls
 echo Installing dependencies from requirements.txt...
-%PY_CMD% -m pip install -r requirements.txt
+"%PY_CMD%" -m pip install -r requirements.txt
 echo.
 pause
 goto menu

@@ -131,8 +131,9 @@ if __name__ == "__main__":
 
     if args.serve:
         import uvicorn
+        from app.api import app
         print(f"Starting Customer Churn Prediction REST API at http://{args.host}:{args.port}")
         print(f"Interactive Swagger Documentation available at http://{args.host}:{args.port}/docs")
-        uvicorn.run("app.api:app", host=args.host, port=args.port, reload=False)
+        uvicorn.run(app, host=args.host, port=args.port)
     else:
         run_demo()
